@@ -198,7 +198,7 @@ class Blockchain {
     let stars = [];
     return new Promise(async (resolve, reject) => {
       try {
-        await self.chain.forEach(async (block) => {
+        self.chain.forEach(async (block) => {
           let data = await block.getBData();
           if (data.owner === address) {
             stars.push(data.star);
@@ -221,30 +221,28 @@ class Blockchain {
   validateChain() {
     let self = this;
     let errorLog = [];
-    return Promise.all(self.chain.map((block) => block.validate())).then(
-      (result) => {
+    return new Promise(async (resolve, reject) => {
+      try {
         let previousBlockHash;
-
-        self.chain.forEach((block, index) => {
-          if (!result[index]) {
-            errorLog.push(`Invalid hash for block #${block.height}`);
+        self.chain.forEach(async (block) => {
+          const isValid = await block.validate();
+          if (!isValid) {
+            errorLog.push(`Block ${block.height} is invalid`);
           }
-
           if (
             block.height !== 0 &&
             block.previousBlockHash !== previousBlockHash
           ) {
-            errorLog.push(
-              `Invalid previous block hash for block #${block.height}`
-            );
+            errorLog.push(`Block ${block.height} has invalid hash`);
           }
-
           previousBlockHash = block.hash;
         });
 
-        return errorLog;
+        resolve(errorLog);
+      } catch (e) {
+        reject(e);
       }
-    );
+    });
   }
 }
 
