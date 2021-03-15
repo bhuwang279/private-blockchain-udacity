@@ -16,4 +16,7 @@
 5. Submit your Star
    ![Request: http://localhost:8000/submitstar](https://snipboard.io/b52WLy.jpg)
 6. Retrieve Stars owned by me
-   ![Request: http://localhost:8000/blocks/<WALLET_ADDRESS>](https://snipboard.io/Wo1R8A.jpg)
+   ![Request: http://localhost:8000/blocks/<WALLET_ADDRESS>](https://snipboard.io/SngE78.jpg)
+
+7. Validate chain
+   ![Request: http://localhost:8000/validatechain](https://snipboard.io/TUpLuA.jpg)

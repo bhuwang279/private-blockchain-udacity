@@ -39,9 +39,9 @@ class Block {
     return new Promise((resolve, reject) => {
       try {
         // Save in auxiliary variable the current block hash
-        let { hash: auxHash } = self;
+        const { hash: auxHash } = self;
         // Recalculate the hash of the Block
-        let hash = this.calculateBlockHash();
+        const hash = this.calculateBlockHash();
         // Comparing if the hashes changed
         // Returning the Block is not valid
         // Returning the Block is valid
@@ -81,11 +81,10 @@ class Block {
   }
 
   calculateBlockHash() {
-    const { height, body, time, previousBlockHash } = this;
+    const clonedBlock = { ...this };
+    clonedBlock.hash = null;
 
-    return SHA256(
-      JSON.stringify({ height, body, time, previousBlockHash })
-    ).toString();
+    return SHA256(JSON.stringify(clonedBlock)).toString();
   }
 }
 

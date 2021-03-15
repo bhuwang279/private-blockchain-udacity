@@ -62,17 +62,23 @@ class Blockchain {
    */
   _addBlock(block) {
     let self = this;
+
     return new Promise(async (resolve, reject) => {
       try {
-        block.height = self.chain.length;
-        block.time = new Date().getTime().toString().slice(0, -3);
-        block.previousBlockHash =
-          self.height !== -1 ? self.chain[self.chain.length - 1].hash : null;
-        block.hash = block.calculateBlockHash();
-        self.chain.push(block);
-        self.height = this.chain.length;
+        const errors = await this.validateChain();
+        if (errors.length == 0) {
+          block.height = self.chain.length;
+          block.time = new Date().getTime().toString().slice(0, -3);
+          block.previousBlockHash =
+            self.height !== -1 ? self.chain[self.chain.length - 1].hash : null;
+          block.hash = block.calculateBlockHash();
+          self.chain.push(block);
+          self.height = this.chain.length;
 
-        resolve(block);
+          resolve(block);
+        } else {
+          reject({ message: "Blockchain is invalid", errors });
+        }
       } catch (e) {
         reject(e);
       }
@@ -122,7 +128,7 @@ class Blockchain {
         const currentTime = parseInt(
           new Date().getTime().toString().slice(0, -3)
         );
-        if (time + 5 * 60 * 100 >= currentTime) {
+        if (time + 5 * 60 >= currentTime) {
           const isMessageValid = bitcoinMessage.verify(
             message,
             address,
@@ -199,9 +205,9 @@ class Blockchain {
     return new Promise(async (resolve, reject) => {
       try {
         self.chain.forEach(async (block) => {
-          let data = await block.getBData();
-          if (data.owner === address) {
-            stars.push(data.star);
+          const data = await block.getBData();
+          if (data && data.owner === address) {
+            stars.push(data);
           }
         });
 
